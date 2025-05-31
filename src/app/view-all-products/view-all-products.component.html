@@ -1,0 +1,181 @@
+<div class="flex flex-1 justify-center py-8">
+    <div class="flex flex-col flex-1 gap-8">
+        <div class="flex flex-wrap justify-between items-center gap-4 px-4 mb-6">
+            <div class="flex flex-col gap-2">
+                <h1 class="text-[#1b120e] tracking-tight text-4xl font-bold leading-tight">All Products</h1>
+                <p class="text-[#7f5e53] text-base font-normal leading-relaxed">Explore our entire collection of
+                    backpacks, designed for every adventure and lifestyle.</p>
+            </div>
+        </div>
+        <div class="flex justify-between items-center gap-4 px-4 py-3 mb-6 rounded-xl bg-white shadow-sm">
+            <div class="flex gap-2 items-center">
+                <button aria-label="Sort Products"
+                        class="p-2 text-[#7f5e53] hover:text-[#1b120e] hover:bg-[#fef5f0] rounded-md transition-colors">
+                    <div data-icon="SortAscending" data-size="24px" data-weight="regular">
+                        <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M128,128a8,8,0,0,1-8,8H48a8,8,0,0,1,0-16h72A8,8,0,0,1,128,128ZM48,72H184a8,8,0,0,0,0-16H48a8,8,0,0,0,0,16Zm56,112H48a8,8,0,0,0,0,16h56a8,8,0,0,0,0-16Zm125.66-21.66a8,8,0,0,0-11.32,0L192,188.69V112a8,8,0,0,0-16,0v76.69l-26.34-26.35a8,8,0,0,0-11.32,11.32l40,40a8,8,0,0,0,11.32,0l40-40A8,8,0,0,0,229.66,162.34Z"></path>
+                        </svg>
+                    </div>
+                </button>
+                <span class="text-sm text-[#7f5e53]">Sort by</span>
+                <select class="form-select text-sm text-[#1b120e] font-medium border-[#eb6c28] rounded-md focus:ring-2 focus:ring-[#eb6c28] focus:border-transparent">
+                    <option>Popularity</option>
+                    <option>Price: Low to High</option>
+                    <option>Price: High to Low</option>
+                    <option>Newest</option>
+                </select>
+            </div>
+            <button aria-label="Filter Products"
+                    class="flex items-center gap-2 p-2 text-[#7f5e53] hover:text-[#1b120e] hover:bg-[#fef5f0] rounded-md transition-colors">
+                <div data-icon="Sliders" data-size="24px" data-weight="regular">
+                    <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M64,105V40a8,8,0,0,0-16,0v65a32,32,0,0,0,0,62v49a8,8,0,0,0,16,0V167a32,32,0,0,0,0-62Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,56,152Zm80-95V40a8,8,0,0,0-16,0V57a32,32,0,0,0,0,62v97a8,8,0,0,0,16,0V119a32,32,0,0,0,0-62Zm-8,47a16,16,0,1,1,16-16A16,16,0,0,1,128,104Zm104,64a32.06,32.06,0,0,0-24-31V40a8,8,0,0,0-16,0v97a32,32,0,0,0,0,62v17a8,8,0,0,0,16,0V199A32.06,32.06,0,0,0,232,168Zm-32,16a16,16,0,1,1,16-16A16,16,0,0,1,200,184Z"></path>
+                    </svg>
+                </div>
+                <span class="text-sm font-medium">Filter</span>
+            </button>
+        </div>
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-4">
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDMznruKB3vEog6as-AegHjqCWsG_9665MIB9zabP_gWBSTsJMi15_WyJFOdtcW4vlSV9rB-xI6Qb0voGW_Af_mF-Rr6Y3ig4wdsbuxaVfI5_J3GZiO31Rfx5vUXFiWsahQpJVQsKII3UM5C1AZ5OSpIng_Cg6ivN096YP04V0aTPPe4bT7PZFl6cq4gdzhSRzjFiM-qDipIbdwnjpV2vQAwjfrZazn9nSeug_w95MxyqzeFPVQDHUtPQphgRs-RTuaQ_4_Vf6hKI1-");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Commuter Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Sleek design for modern
+                        professionals</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$120</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Commuter Backpack', price: 120})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Commuter Backpack', price: 120})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDr0w-7p3J06mflUcvuDc0_UFRMxy_Xoy-NILZwWu0w9U0MR86k2O7QBTtDTUsryNyJJtldtK8MncyTVggR0WF2lP9pkJoYAZrxUL-YGN10wGNayHCJveHrCKgf4gOpZReuL4gApLMkXWI_94fCwlopHl1k-po_DACb192s5U2I69C5bfyknYa0RBd9ipofwPgp51DNMsG8mXBpPo38gdY5V4Z-KxwHt4xPRz20BGgX_f1CTPzCg8VspzE0WV4VRvS-CfbwEuHyMCNm");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Explorer Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Perfect for outdoor
+                        adventures</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$150</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Explorer Backpack', price: 150})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Explorer Backpack', price: 150})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCg7mFwqW0U8OURM1rnRXxuihe-OOeH7MKauuBKaG3D3VqEca4rd6ohUKJ6eAgUkWz0xbSUwES-2lKSH2-5cvYhx1j4plrjMqyW7OnIzUIfVD2C3G5zVZwqjMauSV8YaMLZBJVmarT2TKriK2C2DX93kwiKoqsVdlOEyuBdvB08UP6kwin9ESl0TA-XrjjnvXmahhpEcKPwCqKstmkXDHYxa4eC-2llKSWJl-Rl9mQVnavmysQBrN8NnG0S3zQvNJZI-q8dPFb_3lWD");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Minimalist Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Clean design for
+                        everyday use</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$90</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Minimalist Backpack', price: 90})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Minimalist Backpack', price: 90})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAvVja54mynxNoZvZyBKGrgLcfspIABnBlnVx-8ZpWDFjaOOt35EFEAO6SzHkQJrcDN-RBg6ylbUA_Z5DV5Q2nERWL-GSAVKWeNiPG6uHuiOolNJXlrtYYC2Jvm5kC3uwTM9Jv0ydC_d9AKpMhA3W6l6gyAmZACsxyma75xIuxLmRDepzHxfESXgRWr77vpMOv4dGol-yjlkKJOYD-M2Xn-xCpHZtg92Z7iJOiNDLJKO7kTbuL78kb7y-vuWs89TSOkSWZx7-fIXq1Z");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Urban Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Stylish design for city
+                        life</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$110</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Urban Backpack', price: 110})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Urban Backpack', price: 110})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDzFK_Oih3cTOTTZmAKG7bRT76kQkl4LrGznm-0EHG_flnrVinLSH92F692t1ZDeO-MJDAb5NKqH-261lkZ7AvRgXBUamTe15cQAPVRvZjXr3CqCsEHk1JVohEObYEB4G44tGzVVCJ7kDAkSg8zdHbfo_hJZ9RPnkwmW3iHLP7UO9e4wa4xHVLrNQfxhU768l1QjV3_pq-P72fOQw0qL3G6rPLQv2dlFBFliQYJI2iI5-iDsc7bJC6UrRj9oPlARFXf5_OVEpyNzN5m");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Travel Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Spacious and durable for
+                        travel</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$180</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Travel Backpack', price: 180})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Travel Backpack', price: 180})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" href="#">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuATQ1w5fKXO6en1ImxbTZb78XDM5rzKU7dRdDNHpQ4wzn21EAE-0QuiFFKD3BKhouph6XiMlP-7t80lavV9sBmNSObUhWn6GVSoSStqOtewfOwm2moSOEEfbLmYCTMPb7t0odiR1WB6QHzIIV_Vvuhl2XPzcrElfvy-AVs69wZtyS-VS3Hxp4JU7ztn6Vffc7DoXBKzCrNWZQZI05qsu-QI6QVcIjAU9TRkvKMZipad-5WqtS1zs8GHuzSe2YpbX8nWz0VuYnGnRfSp");'></div>
+                </a>
+                <div class="px-4 flex flex-col flex-grow">
+                    <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                       href="#">The Everyday Backpack</a>
+                    <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Versatile design for
+                        daily use</p>
+                    <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$100</p>
+                </div>
+                <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                    <button (click)="addToCart({name: 'The Everyday Backpack', price: 100})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                        Add to Cart
+                    </button>
+                    <button (click)="buyNow({name: 'The Everyday Backpack', price: 100})"
+                            class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                        Buy Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+<div class="flex flex-1 justify-center py-8">
+    <div class="flex flex-col flex-1 gap-8">
+        <div class="@container">
+            <div class="flex min-h-[520px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-2xl items-start justify-end p-8 @[480px]:p-12 shadow-lg"
+                 style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBij8gO_O2_zFbA68ktXUXVBP9tUcPEZYwkO79eC8YKkl0VSJrewXeFRytjRcPs3MoJ9b1esDtbOJFNUemLUb8ciCQ6Y1u2944ir5x6jBujnV0342yBJRMw13TQym542NIcD87W9I9depAUZeeNTVxOUbZUsTjL_3vRP0BA7VSAEXmNZUsjT4OtHqz8zpzKMRnRhuaNS7OHHlsXsj1tt3gCby38w-t92UTcRTo6O2LsC5udvhCXVzG8QRjlwJ1cdsgmGK_hQfbmiwMc");'>
+                <div class="flex flex-col gap-3 text-left max-w-lg"><h1
+                        class="text-white text-5xl font-bold leading-tight tracking-[-0.02em] @[480px]:text-6xl @[480px]:font-bold @[480px]:leading-tight @[480px]:tracking-[-0.02em]">
+                                        Find Your Perfect Backpack                  </h1>
+                    <h2 class="text-slate-100 text-lg font-normal leading-relaxed @[480px]:text-xl @[480px]:font-normal @[480px]:leading-relaxed">
+                                            Explore our wide selection of backpacks for every adventure.
+                        Durable, stylish, and built to last.                  </h2></div>
+                <button class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 @[480px]:h-14 @[480px]:px-8 bg-[#eb6c28] text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-lg @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#d95f21] transition-colors shadow-md">
+                    <span class="truncate">Shop Now</span></button>
+            </div>
+        </div>
+        <section><h2
+                class="text-[#1b120e] text-3xl font-bold leading-tight tracking-[-0.015em] px-4 pb-4 pt-6">
+            Featured Backpacks</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-4">
+                <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBLnYI2J8iyxId8woz_iXs_sxaSVMC0n9Iwcz1CypAmHpMHqdx4361-px9gP_QBOQEBA60Y5ChrpT_T3QTdYGDYPYk0vZlr_dohrvfBo1eAZejuISt0eF7Gyj8RW05zEJU-lZKfsYcgTKufzSsIcCMsjV2V2Qm2NsPLCVrEk2AC5Ln970fq1yWmTH0ZMMHDaMDoBwBGYP2V9tGyQO8MXViFopmtEXKXRFzsEp7ZP-Jc2tw5GQi3IqZ1QU3bZY-CsKiIb0BKBv33mcFg");'></div>
+                    <div class="px-4 flex flex-col flex-grow"><p
+                            class="text-[#1b120e] text-lg font-semibold leading-normal">Adventure Pack</p>
+                        <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Perfect
+                            for hiking and outdoor activities</p>
+                        <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$79.99</p></div>
+                    <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                        <button (click)="addToCart({name: 'Adventure Pack', price: 79.99})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                            Add to Cart
+                        </button>
+                        <button (click)="buyNow({name: 'Adventure Pack', price: 79.99})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <a routerLink="/product-detail" class="cursor-pointer">
+                        <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                             style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCrquj6BhSU8OymgoV_wCPBRdhYZFlesOCKle4pnu6i8OER7mr1gs1j_qnSHALvGZZxfmyZQHSorHFwq6f978bcapHoM5EsqpKwnGJ3HAbP-2Uapye009r-2AV186gjdDhiP4_Ju8CstOkqq5_7Il4Mjla9KZyC-UTErRuR3tDgnZK-OaIe1ZhPtxd2H338lDAD66zGyi8MiboSBWKt72f56pj4iTcAaU890TmN1wtlTQ_7RIVz7NHHNAkFQOL5dJxIURPoQLLZqnwq");'></div>
+                    </a>
+                    <div class="px-4 flex flex-col flex-grow">
+                        <a routerLink="/product-detail" class="cursor-pointer">
+                            <p class="text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors">
+                                The Commuter Backpack</p>
+                        </a>
+                        <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Sleek design for
+                            modern professionals</p>
+                        <div class="flex items-center gap-2 mt-2">
+                            <span class="text-[#eb6c28] text-base font-bold leading-normal">$129.99</span>
+                            <span class="text-[#7f5e53] text-sm line-through">$159.99</span>
+                            <span class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">19% OFF</span>
+                        </div>
+                    </div>
+                    <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                        <button (click)="addToCart({name: 'The Commuter Backpack', price: 129.99})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                            Add to Cart
+                        </button>
+                        <a routerLink="/product-detail" class="flex-1">
+                            <button class="w-full whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                                View Details
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDqDiJ6Hxw5MvAtMTbdxf6x0GJry13JD6x9sNu3fwA7UFimc47CwTu2VW9ac9pSLE5MgNLzkMGdRwXFq2xxCYSdKo-y0OJDwkDnehUdwO0_dw41fwNmEVAMMvX3rRVaq3bq0sCFvYzWUmyn5UUhpJ1MW1lKBNtNyMxQ0imgYxrnM8S8Ej_HZTzfOV3Y6lLdH_vkjuSm7qhmzCD2bs_b7jZR-w6WEYQ0R56NcYH22m_Oy45luoXQGA4gDMcznF4LWLE-RPsgTC22k3FG");'></div>
+                    <div class="px-4 flex flex-col flex-grow"><p
+                            class="text-[#1b120e] text-lg font-semibold leading-normal">Travel Companion</p>
+                        <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Spacious
+                            and durable for travel</p>
+                        <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$99.50</p></div>
+                    <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                        <button (click)="addToCart({name: 'Travel Companion', price: 99.50})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                            Add to Cart
+                        </button>
+                        <button (click)="buyNow({name: 'Travel Companion', price: 99.50})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA_gskuAtp4f2BZT1EZMzltu956EVz05VwxTrpvPmpZPgNqXJX6jPk-T33c3iywfnLXJhIk-RQ_-UfSA8Mg9iCXWpdwmMniU2mU8hTxcnh8AsHYxqnHgr2jd8x_pgxEJMHNGDcdOrEDiSjsJlf3JsicMruy4yFYBpuhmd7iB4EHbBkg2dcdxaSZRE3Dx059gkeEy4eH4V73STMvPRB-am9cqnGxr4-V8TmkseyGndOAoUBSkESQ_keYdZsGp4j0NaeINF-bcXaQB0wN");'></div>
+                    <div class="px-4 flex flex-col flex-grow"><p
+                            class="text-[#1b120e] text-lg font-semibold leading-normal">School Essential</p>
+                        <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">Stylish
+                            and functional for students</p>
+                        <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">$55.99</p></div>
+                    <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                        <button (click)="addToCart({name: 'School Essential', price: 55.99})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                            Add to Cart
+                        </button>
+                        <button (click)="buyNow({name: 'School Essential', price: 55.99})"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center py-4">
+                <button routerLink="/products"
+                        class="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#141414] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2c2c2c] transition-colors shadow-md">
+                    View All Products
+                </button>
+            </div>
+        </section>
+        <section><h2
+                class="text-[#1b120e] text-3xl font-bold leading-tight tracking-[-0.015em] px-4 pb-4 pt-6">
+            Shop by Category</h2>
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 p-4">
+                <div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+                    <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300 transform group-hover:scale-105"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDm8oBSPIEZUH9Qm2zL09_qQ1n63mCgs2M69GzFGbjE35W4ifQhzjxNbz7qxfipEHBU1xKy5LgE-OASUCRInYbZFpOo1perJC6alP_e9jsLiMxWrbzUeuPagB0oXaCyxC4cny3XyjIpWG--UJE1wPpPXlY4FPcg96eZVocwYy5izUaK_EZryg1yh1CcIpTAKowdNnhHmZVKsU31TKYbemP_BP5TpEc9xTmpfMKlOsFYt2UPvykAnOJHmmAqT7rHYCkz_EhUKtoJzh9u");'></div>
+                    <p class="text-[#1b120e] text-lg font-semibold leading-normal text-center group-hover:text-[#eb6c28] transition-colors">
+                        Hiking Backpacks</p></div>
+                <div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+                    <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300 transform group-hover:scale-105"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAOZbzJM1S2wYgFHQ7-VFpDE-J8bQJqKXlz4Xpshl6XhLs4iUVb5E4jn9aaIjdci_Ml5w6vHHslIam86GUsDWZEvp8tHwLoK_G-M41P-y48vTAGpyQZYA7ri8vK_aoKzkfUDkezLkYEs30rARWHCKhNn9fHfDe6s0FniQ3RX59wfg6hCGoW8r4Kzc7qnBHn06UFpgQY_R2Rdk2AXFrhAhqyAHQWuJ_aYg8a-rv_E3dQycey6-WscHoqRzjgx0T9RN86gIBDusxcIQE7");'></div>
+                    <p class="text-[#1b120e] text-lg font-semibold leading-normal text-center group-hover:text-[#eb6c28] transition-colors">
+                        Commuter Backpacks</p></div>
+                <div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+                    <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300 transform group-hover:scale-105"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC0bKV8mYeooOyFGb6r-hnA2d3u4bkeYqQW3ifLM_1Ck0eZo5YZ-kf1tJO0qc4DDeAXRHRveQ9Ai09P4pbBY4iuZPCahNe9qCtCQ15Yq1gVk6XT_1uTg9JOAPxjrTLJEVSZ6mLkTOdwyh5K4uysvt7ZOPffIqKCQacVfJMI8s8CFAB1d8BnPv4XKhvGHVG2A7Dk-EpqL6VrOuRUqA8rQ_0tpb3XQjQiWVTyPyUwdbwW_ZSUMh6xXisT7j-EtL0y2FcTnrnNC3hI_9fW");'></div>
+                    <p class="text-[#1b120e] text-lg font-semibold leading-normal text-center group-hover:text-[#eb6c28] transition-colors">
+                        Travel Backpacks</p></div>
+                <div class="flex flex-col gap-3 pb-3 group cursor-pointer">
+                    <div class="w-full bg-center bg-no-repeat aspect-square bg-cover rounded-xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300 transform group-hover:scale-105"
+                         style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB0VNGz8qRDulmIuiLIT7VGO9qQX8t0KLF1JTjW8rzOn382VwihRSdax6yA62ggwVry4ZUcEp7ZJp12S8fabspDPGlCCLnLQB8g0Qga1JV3kWNqVhVrIdEFFpskIgNBPlaJyPwDPbsjlt2R80YAI0GA1yNrZJHuaAZ8RuH43kDKV5q3BFt92UcvS4fSsWCzaMfUyn2jxJv9ooLIbbakSpIy9jkdvkWF2saZ");'></div>
+                    <p class="text-[#1b120e] text-lg font-semibold leading-normal text-center group-hover:text-[#eb6c28] transition-colors">
+                        Travel Backpacks</p></div>
+            </div>
+        </section>
+    </div>
+</div>

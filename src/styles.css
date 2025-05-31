@@ -1,0 +1,20 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: "Plus Jakarta Sans", "Noto Sans", sans-serif;
+}
+
+/* Add a pointer cursor to all anchor tags that are interactive */
+a[href],
+a[routerLink] {
+  cursor: pointer;
+}
+
+/* Ensure buttons also have a pointer cursor, if not already default */
+button {
+  cursor: pointer;
+}
