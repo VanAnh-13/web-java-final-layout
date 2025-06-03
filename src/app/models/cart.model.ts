@@ -10,7 +10,12 @@ export class CartItem {
   }
 
   get totalPrice(): number {
-    return this.product.price * this.quantity;
+    // Extract price from string format (e.g., "345,000₫")
+    const priceValue = typeof this.product.price === 'string' 
+      ? parseFloat(this.product.price.replace(/[^\d.]/g, '')) 
+      : parseFloat(this.product.price);
+    
+    return priceValue * this.quantity;
   }
 }
 
@@ -24,9 +29,10 @@ export class Cart {
   get totalPrice(): number {
     return this.items.reduce((total, item) => total + item.totalPrice, 0);
   }
-
-  addItem(product: Product, quantity: number = 1): void {
-    const existingItem = this.items.find(item => item.product.id === product.id);
+    addItem(product: Product, quantity: number = 1): void {
+    // Use product.name as identifier if id is not available
+    const productId = product.id || product.name;
+    const existingItem = this.items.find(item => (item.product.id || item.product.name) === productId);
     
     if (existingItem) {
       existingItem.quantity += quantity;
@@ -35,16 +41,16 @@ export class Cart {
     }
   }
 
-  updateQuantity(productId: number, quantity: number): void {
-    const item = this.items.find(item => item.product.id === productId);
+  updateQuantity(productId: string, quantity: number): void {
+    const item = this.items.find(item => (item.product.id || item.product.name) === productId);
     
     if (item) {
       item.quantity = quantity;
     }
   }
 
-  removeItem(productId: number): void {
-    const index = this.items.findIndex(item => item.product.id === productId);
+  removeItem(productId: string): void {
+    const index = this.items.findIndex(item => (item.product.id || item.product.name) === productId);
     
     if (index !== -1) {
       this.items.splice(index, 1);

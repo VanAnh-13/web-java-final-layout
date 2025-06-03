@@ -1,48 +1,34 @@
 export class Product {
-  id: number;
+  id?: string; // Add optional ID field
+  brandName: string;
   name: string;
+  price: string;
+  imageLink: string;
+  detailLink: string;
   description: string;
-  price: number;
-  imageUrl: string;
-  category: string;
-  brand: string;
-  inStock: boolean;
-  quantity: number;
-  rating: number;
-  reviews: number;
-  features: string[];
-  colors: string[];
-  sizes: string[];
-
+  
   constructor(
-    id: number = 0,
+    brandName: string = '',
     name: string = '',
+    price: string = '',
+    imageLink: string = '',
+    detailLink: string = '',
     description: string = '',
-    price: number = 0,
-    imageUrl: string = '',
-    category: string = '',
-    brand: string = '',
-    inStock: boolean = true,
-    quantity: number = 0,
-    rating: number = 0,
-    reviews: number = 0,
-    features: string[] = [],
-    colors: string[] = [],
-    sizes: string[] = []
+    id?: string
   ) {
-    this.id = id;
+    this.brandName = brandName;
     this.name = name;
-    this.description = description;
     this.price = price;
-    this.imageUrl = imageUrl;
-    this.category = category;
-    this.brand = brand;
-    this.inStock = inStock;
-    this.quantity = quantity;
-    this.rating = rating;
-    this.reviews = reviews;
-    this.features = features;
-    this.colors = colors;
-    this.sizes = sizes;
+    this.imageLink = imageLink;
+    this.detailLink = detailLink;
+    this.description = description;
+    this.id = id || name; // Use name as ID if no ID provided
   }
+}
+
+// Interface matching the exact API response
+export interface ProductApiResponse {
+  code: number;
+  message: string;
+  data: Product[];
 }

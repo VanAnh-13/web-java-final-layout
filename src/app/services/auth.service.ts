@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
-import { User } from '../models/user.model';
+import { ApiResponse, ChangePasswordRequest, LoginRequest, LoginResponse, RegistrationRequest, UpdateProfileRequest, User } from '../models/user.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -11,7 +11,6 @@ import { environment } from '../../environments/environment';
 export class AuthService {
   private currentUserSubject: BehaviorSubject<User | null>;
   public currentUser$: Observable<User | null>;
-  private endpoint = 'auth';
 
   constructor(private apiService: ApiService) {
     // Load user from localStorage if exists
@@ -25,95 +24,113 @@ export class AuthService {
   public get currentUserValue(): User | null {
     return this.currentUserSubject.value;
   }
-
   public get isLoggedIn(): boolean {
-    return !!this.currentUserValue && !!localStorage.getItem(environment.authTokenKey);
+    return !!this.currentUserValue;
   }
 
-  login(email: string, password: string): Observable<User> {
-    // In a real app, make an API call to login
-    // For now, we'll just simulate it
-    if (email === 'user@example.com' && password === 'password') {
-      const mockUser = new User(
-        1, 
-        'John', 
-        'Doe', 
-        'user@example.com', 
-        '123-456-7890'
-      );
-      
-      // Save auth tokens and user info
-      localStorage.setItem(environment.authTokenKey, 'mock-token');
-      localStorage.setItem(environment.refreshTokenKey, 'mock-refresh-token');
-      localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(mockUser));
-      
-      this.currentUserSubject.next(mockUser);
-      return of(mockUser);
-    }
-
-    return throwError(() => new Error('Invalid email or password'));
-  }
-
-  register(user: User, password: string): Observable<User> {
-    // In a real app, make an API call to register
-    // For now, we'll just simulate it
-    const mockUser = new User(
-      2,
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.phoneNumber
+  login(email: string, password: string): Observable<LoginResponse> {
+    const loginData: LoginRequest = { email, password };
+    return this.apiService.post<LoginResponse>('api/auth/login', loginData).pipe(
+      tap(response => {
+        const user = new User(
+          0, // ID will be fetched from profile later
+          response.email,
+          response.username,
+          response.roles
+        );
+        
+        // Save user info only
+        localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(user));
+        
+        this.currentUserSubject.next(user);
+      }),
+      catchError(error => {
+        console.error('Login error', error);
+        return throwError(() => error);
+      })
     );
-
-    // Save auth tokens and user info
-    localStorage.setItem(environment.authTokenKey, 'mock-token');
-    localStorage.setItem(environment.refreshTokenKey, 'mock-refresh-token');
-    localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(mockUser));
-    
-    this.currentUserSubject.next(mockUser);
-    return of(mockUser);
   }
 
-  logout(): void {
-    // Remove tokens and user info from localStorage
-    localStorage.removeItem(environment.authTokenKey);
-    localStorage.removeItem(environment.refreshTokenKey);
-    localStorage.removeItem(`${environment.storagePrefix}user`);
-    
-    // Update the current user subject
-    this.currentUserSubject.next(null);
+  register(name: string, email: string, password: string, confirmPassword: string): Observable<string> {
+    const registrationData: RegistrationRequest = {
+      name,
+      email,
+      password,
+      confirmPassword
+    };
+
+    return this.apiService.post<string>('api/auth/register', registrationData).pipe(
+      catchError(error => {
+        console.error('Registration error', error);
+        return throwError(() => error);
+      })
+    );
+  }  logout(): Observable<void> {
+    return this.apiService.post<void>('api/auth/logout', {}).pipe(
+      tap(() => {
+        // Remove user info from localStorage
+        localStorage.removeItem(`${environment.storagePrefix}user`);
+        
+        // Update the current user subject
+        this.currentUserSubject.next(null);
+      }),
+      catchError(error => {
+        console.error('Logout error', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  refreshToken(): Observable<string> {
-    // In a real app, make an API call to refresh the token
-    // For now, we'll just simulate it
-    const refreshToken = localStorage.getItem(environment.refreshTokenKey);
-    
-    if (refreshToken) {
-      const newToken = 'new-mock-token';
-      localStorage.setItem(environment.authTokenKey, newToken);
-      return of(newToken);
-    }
-
-    return throwError(() => new Error('No refresh token available'));
+  getUserProfile(): Observable<User> {
+    return this.apiService.get<User>('api/user/profile').pipe(
+      tap(user => {
+        // Update user in localStorage and current user subject
+        localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(user));
+        this.currentUserSubject.next(user);
+      }),
+      catchError(error => {
+        console.error('Get profile error', error);
+        return throwError(() => error);
+      })
+    );
   }
 
-  updateProfile(user: User): Observable<User> {
-    // In a real app, make an API call to update the user profile
-    // For now, we'll just simulate it
-    if (this.currentUserValue) {
-      const updatedUser = {
-        ...this.currentUserValue,
-        ...user
-      };
-      
-      // Save updated user info
-      localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(updatedUser));
-      this.currentUserSubject.next(updatedUser);
-      
-      return of(updatedUser);
-    }
-
-    return throwError(() => new Error('No user is logged in'));
+  updateProfile(email: string, name: string): Observable<string> {
+    const updateData: UpdateProfileRequest = { email, name };
+    
+    return this.apiService.put<string>('api/user/profile', '', updateData).pipe(
+      tap(response => {
+        if (this.currentUserValue) {
+          const updatedUser = {
+            ...this.currentUserValue,
+            email,
+            name
+          };
+          
+          // Save updated user info
+          localStorage.setItem(`${environment.storagePrefix}user`, JSON.stringify(updatedUser));
+          this.currentUserSubject.next(updatedUser as User);
+        }
+      }),
+      catchError(error => {
+        console.error('Update profile error', error);
+        return throwError(() => error);
+      })
+    );
+  }
+  
+  changePassword(oldPassword: string, newPassword: string, confirmPassword: string): Observable<string> {
+    const passwordData: ChangePasswordRequest = {
+      oldPassword,
+      newPassword,
+      confirmPassword
+    };
+    
+    return this.apiService.put<string>('api/user/change-password', '', passwordData).pipe(
+      catchError(error => {
+        console.error('Change password error', error);
+        return throwError(() => error);
+      })
+    );
   }
 }

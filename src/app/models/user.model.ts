@@ -1,46 +1,63 @@
-export class Address {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-
-  constructor(
-    street: string = '',
-    city: string = '',
-    state: string = '',
-    zipCode: string = '',
-    country: string = ''
-  ) {
-    this.street = street;
-    this.city = city;
-    this.state = state;
-    this.zipCode = zipCode;
-    this.country = country;
-  }
-}
-
 export class User {
   id: number;
-  firstName: string;
-  lastName: string;
   email: string;
-  phoneNumber: string;
-  addresses: Address[];
+  name: string;
+  roles: string[];
+  avatar?: string;
+  userPhone?: string;
+  status?: string;
+  createdDate?: Date;
   
   constructor(
     id: number = 0,
-    firstName: string = '',
-    lastName: string = '',
     email: string = '',
-    phoneNumber: string = '',
-    addresses: Address[] = []
+    name: string = '',
+    roles: string[] = [],
+    avatar: string = '',
+    userPhone: string = '',
+    status: string = 'Active'
   ) {
     this.id = id;
-    this.firstName = firstName;
-    this.lastName = lastName;
     this.email = email;
-    this.phoneNumber = phoneNumber;
-    this.addresses = addresses;
+    this.name = name;
+    this.roles = roles;
+    this.avatar = avatar;
+    this.userPhone = userPhone;
+    this.status = status;
   }
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  username: string;
+  email: string;
+  roles: string[];
+}
+
+export interface RegistrationRequest {
+  email: string;
+  name: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface UpdateProfileRequest {
+  email: string;
+  name: string;
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
 }

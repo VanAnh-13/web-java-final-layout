@@ -16,14 +16,12 @@ import {AppRoutingModule} from './app-routing.module';
 
 @NgModule({
     declarations: [
-        AppComponent,
+        // Components that are not standalone
         HomeComponent,
         ProductDetailComponent,
         ViewAllProductsComponent,
         CheckoutComponent,
-        CartComponent,
-        HeaderComponent,
-        FooterComponent
+        CartComponent
     ],
     imports: [
         BrowserModule,

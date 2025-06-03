@@ -1,0 +1,108 @@
+<div class="flex flex-1 justify-center py-8">
+    <div class="flex flex-col flex-1 gap-8">
+        <div class="@container">
+            <div class="flex min-h-[520px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-2xl items-start justify-end p-8 @[480px]:p-12 shadow-lg"
+                 style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuBij8gO_O2_zFbA68ktXUXVBP9tUcPEZYwkO79eC8YKkl0VSJrewXeFRytjRcPs3MoJ9b1esDtbOJFNUemLUb8ciCQ6Y1u2944ir5x6jBujnV0342yBJRMw13TQym542NIcD87W9I9depAUZeeNTVxOUbZUsTjL_3vRP0BA7VSAEXmNZUsjT4OtHqz8zpzKMRnRhuaNS7OHHlsXsj1tt3gCby38w-t92UTcRTo6O2LsC5udvhCXVzG8QRjlwJ1cdsgmGK_hQfbmiwMc");'>
+                <div class="flex flex-col gap-3 text-left max-w-lg">
+                    <h1 class="text-white text-5xl font-bold leading-tight tracking-[-0.02em] @[480px]:text-6xl @[480px]:font-bold @[480px]:leading-tight @[480px]:tracking-[-0.02em]">
+                        Find Your <br>Perfect Backpack</h1>
+                    <h2 class="text-slate-100 text-lg font-normal leading-relaxed @[480px]:text-xl @[480px]:font-normal @[480px]:leading-relaxed">
+                        Explore our wide selection of backpacks for every adventure.
+                        Durable, stylish, and built to last.</h2></div>
+                <button class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 @[480px]:h-14 @[480px]:px-8 bg-[#eb6c28] text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-lg @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#d95f21] transition-colors shadow-md">
+                    <span class="truncate">Shop Now</span></button>
+            </div>
+        </div>
+        <section>
+            <h2 class="text-[#1b120e] text-3xl font-bold leading-tight tracking-[-0.015em] px-4 pb-4 pt-6">
+                Featured Backpacks</h2>
+
+            <!-- Loading indicator -->
+            <div *ngIf="loading" class="flex justify-center py-8">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#eb6c28]"></div>
+            </div>
+
+            <!-- Error message -->
+            <div *ngIf="error" class="text-red-500 text-center py-4">
+                {{ error }}
+            </div>
+
+            <!-- Empty state -->
+            <div *ngIf="!loading && !error && featuredProducts.length === 0"
+                 class="flex flex-col items-center justify-center py-12">
+                <div class="bg-gray-100 rounded-full p-6 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-700 mb-2">No Products Found</h3>
+                <div class="flex justify-center py-4">
+                    <button routerLink="/products"
+                            class="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#141414] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2c2c2c] transition-colors shadow-md">
+                        View All Products
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-4">
+                <!-- API products -->
+                <div *ngFor="let product of featuredProducts"
+                     class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <a class="block overflow-hidden" [routerLink]="['/product-detail']"
+                       [queryParams]="{name: product.name}">
+                        <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                             [style.background-image]="'url(' + product.imageLink + ')'"></div>
+                    </a>
+                    <div class="px-4 flex flex-col flex-grow">
+                        <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
+                           [routerLink]="['/product-detail']"
+                           [queryParams]="{name: product.name}">{{ product.name }}</a>
+                        <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">{{ product.brandName }}</p>
+                        <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">{{ product.price }}</p>
+                    </div>
+                    <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
+                        <button (click)="addToCart(product)"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
+                            Add to Cart
+                        </button>
+                        <button (click)="buyNow(product)"
+                                class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
+                            Buy Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center py-4">
+                <button routerLink="/products"
+                        class="flex min-w-[200px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-11 px-6 bg-[#141414] text-white text-sm font-bold leading-normal tracking-[0.015em] hover:bg-[#2c2c2c] transition-colors shadow-md">
+                    View All Products
+                </button>
+            </div>
+        </section>
+        <section>
+            <h2 class="text-[#1b120e] text-3xl font-bold leading-tight tracking-[-0.015em] px-4 pb-4 pt-6">
+                Shop by brand</h2>
+            <div class="grid grid-cols-3 justify-items-center gap-5 p-4">
+                <!-- Paginated API Brands -->
+                <a *ngFor="let brand of paginatedBrands"
+                   [routerLink]="['/products']"
+                   [queryParams]="{ brand: brand }"
+                   class="aspect-square max-w-[200px] w-full rounded-xl overflow-hidden shadow-sm group-hover:shadow-lg transition-shadow duration-300 transform group-hover:scale-105 flex items-center justify-center cursor-pointer">
+                    <span class="text-2xl font-bold text-[#eb6c28]">{{ brand }}</span>
+                </a>
+            </div>
+            <div class="flex justify-center gap-2 px-4 mb-4">
+                <a href="#" (click)="prevBrandPage(); $event.preventDefault()"
+                   [attr.aria-disabled]="isFirstBrandPage" [class.opacity-50]="isFirstBrandPage"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Prev</a>
+                <span class="text-sm text-[#7f5e53]">Page {{ brandPage + 1 }} of {{ totalBrandPages }}</span>
+                <a href="#" (click)="nextBrandPage(); $event.preventDefault()"
+                   [attr.aria-disabled]="isLastBrandPage" [class.opacity-50]="isLastBrandPage"
+                   class="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300">Next</a>
+            </div>
+        </section>
+    </div>
+</div>
