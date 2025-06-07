@@ -42,17 +42,13 @@ export class ProductDetailComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // Get product ID from route parameters
+        // Get product ID from route parameters and fetch by ID only
         this.route.params.subscribe(params => {
-            if (params['id']) {
-                this.loadProduct(params['id']);
+            const id = params['id'];
+            if (id) {
+                this.loadProduct(id);
             } else {
-                // Handle case where no ID is provided - try to get it from query params
-                this.route.queryParams.subscribe(queryParams => {
-                    if (queryParams['name']) {
-                        this.loadProductByName(queryParams['name']);
-                    }
-                });
+                this.error = 'No product ID provided.';
             }
         });
     }
@@ -77,30 +73,11 @@ export class ProductDetailComponent implements OnInit {
         });
     }
 
-    loadProductByName(name: string): void {
-        this.isLoading = true;
-        this.productService.getProductByName(name).subscribe({
-            next: (product) => {
-                if (product) {
-                    this.processProduct(product);
-                } else {
-                    this.error = 'Product not found';
-                }
-                this.isLoading = false;
-            },
-            error: (err) => {
-                console.error('Error loading product by name:', err);
-                this.error = 'Unable to load product. Please try again later.';
-                this.isLoading = false;
-            }
-        });
-    }
-
     // Process the product data from API to match our UI needs
     processProduct(product: Product): void {
         // Convert API product to UI format
         this.product = {
-            id: 1, // API doesn't provide ID currently
+            id: product.id, // Use actual product ID
             name: product.name,
             brand: product.brandName,
             price: product.price,
@@ -202,16 +179,20 @@ export class ProductDetailComponent implements OnInit {
         }
     }
 
+    // Calculate discount percentage based on originalPrice and current price
+    getDiscountPercentage(): number {
+        const price = parseFloat(this.product.price) || 0;
+        const original = this.product.originalPrice || 0;
+        if (original > price) {
+            return Math.round(((original - price) / original) * 100);
+        }
+        return 0;
+    }
+
+    // Ensure quantity stays at least 1 when changed manually
     onQuantityChange(): void {
         if (this.quantity < 1) {
             this.quantity = 1;
         }
-    }
-
-    getDiscountPercentage(): number {
-        if (this.product.originalPrice && this.product.price) {
-            return Math.round(((this.product.originalPrice - this.product.price) / this.product.originalPrice) * 100);
-        }
-        return 0;
     }
 }

@@ -70,14 +70,13 @@
             <!-- API products -->
             <div *ngFor="let product of filteredProducts"
                  class="flex flex-col h-full gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-                <a class="block overflow-hidden" [routerLink]="['/product-detail']"
-                   [queryParams]="{name: product.name}">
+                <a class="block overflow-hidden" [routerLink]="['/product', product.id]">
                     <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
                          [style.background-image]="'url(' + product.imageLink + ')'"></div>
                 </a>
                 <div class="px-4 flex flex-col flex-grow">
                     <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
-                       [routerLink]="['/product-detail']" [queryParams]="{name: product.name}">{{ product.name }}</a>
+                       [routerLink]="['/product', product.id]">{{ product.name }}</a>
                     <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">{{ product.brandName }}</p>
                     <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">{{ product.price }}</p>
                 </div>

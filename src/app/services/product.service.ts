@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Product } from '../models/product.model';
-import { Observable, BehaviorSubject, catchError, throwError } from 'rxjs';
+import { Observable, BehaviorSubject, catchError, throwError, of } from 'rxjs';
 import { ApiService } from './api.service';
+import { HttpClient } from '@angular/common/http';
+import { map, tap } from 'rxjs/operators';
+
+interface ApiResponse<T> {
+  data: T;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +18,9 @@ export class ProductService {
   public products$ = this.productsSubject.asObservable();
   private productsLoaded = false;
 
-  constructor(private apiService: ApiService) { }
+  private productsEndpoint = 'api/products'; // Adjust the endpoint as necessary
+
+  constructor(private apiService: ApiService, private http: HttpClient) { }
 
   /**
    * Load all products on first call then serve cached data
@@ -115,6 +123,30 @@ export class ProductService {
       catchError(error => {
         console.error(`Error deleting product with id ${id}`, error);
         return throwError(() => error);
+      })
+    );
+  }
+
+  /**
+   * Get all product brands
+   * @returns Observable<string[]>
+   */
+  getAllBrands(): Observable<string[]> {
+    return this.http.get<ApiResponse<any>>(`${this.productsEndpoint}/brands`).pipe(
+      map(response => {
+        const data = response.data;
+        if (Array.isArray(data)) {
+          return data;
+        }
+        if (data && Array.isArray(data.content)) {
+          return data.content;
+        }
+        console.warn('getAllBrands: Unexpected data structure from API, returning empty array', data);
+        return [];
+      }),
+      catchError(error => {
+        console.error('Error fetching brands:', error);
+        return of([]);
       })
     );
   }

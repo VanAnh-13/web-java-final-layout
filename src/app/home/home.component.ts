@@ -77,14 +77,27 @@ export class HomeComponent implements OnInit {
      */
     loadPaginatedBrands(): void {
         this.productService.getPaginatedBrands(this.brandPage, this.brandPageSize).subscribe({
-            next: (resp) => {
-                this.paginatedBrands = resp.brandName;
+            next: (resp: any) => { // Changed type to any to temporarily bypass type error
+                console.log('Received paginated brands response:', resp); 
+                this.paginatedBrands = resp.content; // Changed from resp.brandName to resp.content
                 this.isFirstBrandPage = resp.isFirst;
                 this.isLastBrandPage = resp.isLast;
                 this.totalBrandPages = resp.totalPages;
+                // Ensure brandPage is not out of bounds if totalPages changed
+                if (this.brandPage >= this.totalBrandPages && this.totalBrandPages > 0) {
+                    this.brandPage = this.totalBrandPages - 1;
+                } else if (this.totalBrandPages === 0) {
+                    this.brandPage = 0; // Reset to first page if no pages
+                }
             },
             error: (err) => {
                 console.error('Error loading paginated brands:', err);
+                // Optionally, set some state to show an error message in the UI
+                this.error = "Could not load brands. Please try again later.";
+                this.paginatedBrands = [];
+                this.totalBrandPages = 0;
+                this.isFirstBrandPage = true;
+                this.isLastBrandPage = true;
             }
         });
     }
