@@ -127,6 +127,10 @@ button {
   .form-input {
     @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm;
   }
+  .form-input:focus {
+    border-color: var(--color-primary); /* Updated to use CSS variable */
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); /* Updated to match primary color */
+  }
   
   .form-label {
     @apply block text-sm font-medium text-gray-700 mb-1;
@@ -146,5 +150,14 @@ button {
   
   .badge-danger {
     @apply bg-red-100 text-red-800;
+  }
+  
+  .link-subtle {
+    color: var(--color-text-light); /* Updated to use CSS variable */
+    text-decoration: none;
+  }
+  .link-subtle:hover {
+    color: var(--color-primary); /* Updated to use CSS variable */
+    text-decoration: underline;
   }
 }

@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {RouterModule, ActivatedRoute} from '@angular/router';
+import {RouterModule, ActivatedRoute, Router} from '@angular/router';
 import {FormsModule} from '@angular/forms';
 import {ProductService} from '../product.service';
 import {Product} from '../models/product.model';
-import {CartService} from '../cart.service';
+import {CartService} from '../services/cart.service';
+import { AuthService } from '../services/auth.service'; // Import AuthService
 
 @Component({
     selector: 'app-product-detail',
@@ -33,11 +34,14 @@ export class ProductDetailComponent implements OnInit {
     quantity: number = 1;
     isLoading: boolean = false;
     error: string | null = null;
+    isLoggedIn: boolean = false; // Added isLoggedIn property
 
     constructor(
         private route: ActivatedRoute,
         private productService: ProductService,
-        private cartService: CartService
+        private cartService: CartService,
+        private authService: AuthService, // Inject AuthService
+        private router: Router // Inject Router
     ) {
     }
 
@@ -51,11 +55,12 @@ export class ProductDetailComponent implements OnInit {
                 this.error = 'No product ID provided.';
             }
         });
+        this.isLoggedIn = this.authService.isLoggedIn; // Initialize isLoggedIn
     }
 
     loadProduct(id: string): void {
         this.isLoading = true;
-        this.productService.getProductById(Number(id)).subscribe({
+        this.productService.getProductById(id).subscribe({
             next: (product) => {
                 if (product) {
                     this.processProduct(product);
@@ -194,5 +199,9 @@ export class ProductDetailComponent implements OnInit {
         if (this.quantity < 1) {
             this.quantity = 1;
         }
+    }
+
+    redirectToLogin(): void { // Added redirectToLogin method
+        this.router.navigate(['/login']);
     }
 }

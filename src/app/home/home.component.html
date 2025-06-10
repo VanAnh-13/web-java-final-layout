@@ -9,7 +9,7 @@
                     <h2 class="text-slate-100 text-lg font-normal leading-relaxed @[480px]:text-xl @[480px]:font-normal @[480px]:leading-relaxed">
                         Explore our wide selection of backpacks for every adventure.
                         Durable, stylish, and built to last.</h2></div>
-                <button class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 @[480px]:h-14 @[480px]:px-8 bg-[#eb6c28] text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-lg @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#d95f21] transition-colors shadow-md">
+                <button routerLink="/login" class="flex min-w-[120px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 @[480px]:h-14 @[480px]:px-8 bg-[#eb6c28] text-white text-base font-bold leading-normal tracking-[0.015em] @[480px]:text-lg @[480px]:font-bold @[480px]:leading-normal @[480px]:tracking-[0.015em] hover:bg-[#d95f21] transition-colors shadow-md">
                     <span class="truncate">Shop Now</span></button>
             </div>
         </div>
@@ -50,25 +50,24 @@
             <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-4">
                 <!-- API products -->
                 <div *ngFor="let product of featuredProducts"
-                     class="flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-                    <a class="block overflow-hidden" [routerLink]="['/product-detail']"
-                       [queryParams]="{name: product.name}">
-                        <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
-                             [style.background-image]="'url(' + product.imageLink + ')'"></div>
+                     class="product-card flex flex-col gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                    <a class="block overflow-hidden" [routerLink]="['/product-detail', product.id]">
+                        <div class="product-image w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                             [style.background-image]="'url(' + product.imageLink + ')'">
+                        </div>
                     </a>
                     <div class="px-4 flex flex-col flex-grow">
                         <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
-                           [routerLink]="['/product-detail']"
-                           [queryParams]="{name: product.name}">{{ product.name }}</a>
+                           [routerLink]="['/product-detail', product.id]">{{ product.name }}</a>
                         <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">{{ product.brandName }}</p>
                         <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">{{ product.price }}</p>
                     </div>
                     <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
-                        <button (click)="addToCart(product)"
+                        <button (click)="isLoggedIn ? animateAddToCart($event, product) : redirectToLogin()"
                                 class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
                             Add to Cart
                         </button>
-                        <button (click)="buyNow(product)"
+                        <button (click)="isLoggedIn ? buyNow(product) : redirectToLogin()"
                                 class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
                             Buy Now
                         </button>

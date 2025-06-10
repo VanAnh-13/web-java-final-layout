@@ -32,7 +32,7 @@
                 <select (change)="filterByBrand($any($event.target).value)"
                         class="form-select text-sm text-[#1b120e] font-medium border-[#eb6c28] rounded-md focus:ring-2 focus:ring-[#eb6c28] focus:border-transparent">
                     <option value="">All Brands</option>
-                    <option *ngFor="let brand of brands" [value]="brand"
+                    <option *ngFor="let brand of paginatedBrands" [value]="brand"
                             [selected]="selectedBrand === brand">{{ brand }}
                     </option>
                 </select>
@@ -66,31 +66,49 @@
                 View All Products
             </button>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4">
+        <div class="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6 p-4">
             <!-- API products -->
             <div *ngFor="let product of filteredProducts"
-                 class="flex flex-col h-full gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
-                <a class="block overflow-hidden" [routerLink]="['/product', product.id]">
-                    <div class="w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
-                         [style.background-image]="'url(' + product.imageLink + ')'"></div>
+                 class="product-card flex flex-col h-full gap-4 pb-4 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 bg-white">
+                <a class="block overflow-hidden" [routerLink]="['/product-detail', product.id]">
+                    <div class="product-image w-full bg-center bg-no-repeat aspect-[4/3] bg-cover"
+                         [style.background-image]="'url(' + product.imageLink + ')'">
+                    </div>
                 </a>
                 <div class="px-4 flex flex-col flex-grow">
                     <a class="block text-[#1b120e] text-lg font-semibold leading-normal hover:text-[#eb6c28] transition-colors"
-                       [routerLink]="['/product', product.id]">{{ product.name }}</a>
+                       [routerLink]="['/product-detail', product.id]">{{ product.name }}</a>
                     <p class="text-[#7f5e53] text-sm font-normal leading-normal mt-1 flex-grow">{{ product.brandName }}</p>
                     <p class="text-[#eb6c28] text-base font-bold leading-normal mt-2">{{ product.price }}</p>
                 </div>
                 <div class="px-4 mt-auto flex flex-col sm:flex-row gap-2">
-                    <button (click)="addToCart(product)"
+                    <button (click)="isLoggedIn ? animateAddToCart($event, product) : redirectToLogin()"
                             class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-[#1b120e] bg-transparent border border-[#eb6c28] hover:bg-[#fef5f0] rounded-md px-3 py-2 transition-colors">
                         Add to Cart
                     </button>
-                    <button (click)="buyNow(product)"
+                    <button (click)="isLoggedIn ? buyNow(product) : redirectToLogin()"
                             class="flex-1 whitespace-nowrap text-sm font-medium leading-normal text-white bg-[#eb6c28] hover:bg-[#d95f21] rounded-md px-3 py-2 transition-colors">
                         Buy Now
                     </button>
                 </div>
             </div>
         </div> <!-- grid container -->
+
+        <!-- Pagination Buttons -->
+        <div class="flex justify-center items-center gap-4 py-4">
+            <button 
+                class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                (click)="onPreviousPage()" 
+                [disabled]="!hasPreviousPage()">
+                Previous
+            </button>
+            <button 
+                class="px-4 py-2 bg-[#eb6c28] text-white rounded-lg hover:bg-[#d95f21] transition-colors disabled:opacity-50"
+                (click)="onNextPage()"
+                [disabled]="!hasNextPage()">
+                Next
+            </button>
+        </div>
+
     </div>
 </div>

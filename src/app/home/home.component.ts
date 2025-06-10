@@ -1,10 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {Router, RouterModule} from '@angular/router'; // Import Router
-import {CartService} from '../cart.service'; // Import CartService
+import {CartService} from '../services/cart.service'; // Import CartService
 import {ProductService} from '../product.service'; // Import ProductService
 import {Product} from '../models/product.model'; // Import Product model
 import {NgFor, NgIf} from '@angular/common'; // Import NgFor, NgIf for template
 import {HttpClientModule} from '@angular/common/http'; // Import HttpClientModule
+import { AuthService } from '../services/auth.service'; // Import AuthService
 
 @Component({
     selector: 'app-home',
@@ -32,16 +33,19 @@ export class HomeComponent implements OnInit {
     isLastBrandPage: boolean = false;
     loading: boolean = true; // Loading indicator
     error: string | null = null; // Error message
+    isLoggedIn: boolean = false; // Added isLoggedIn property
 
     constructor(
         public router: Router, // Changed from private to public
         private cartService: CartService, 
-        private productService: ProductService) {
+        private productService: ProductService,
+        private authService: AuthService) { // Inject AuthService
     } // Inject Router, CartService, and ProductService
     
     ngOnInit(): void {
         this.loadFeaturedProducts();
         this.loadPaginatedBrands();
+        this.isLoggedIn = this.authService.isLoggedIn; // Initialize isLoggedIn
     }    addToCart(product: any) {
         this.cartService.addToCart(product);
         console.log('Product added to cart via service:', product);
@@ -51,6 +55,49 @@ export class HomeComponent implements OnInit {
         this.cartService.addToCart(product); // Add to cart first
         console.log('Product added to buy list via service:', product);
         this.router.navigate(['/checkout']); // Navigate to checkout
+    }
+    
+    /**
+     * Animate product image flying to cart icon when adding to cart
+     */
+    animateAddToCart(event: MouseEvent, product: any): void {
+        // Add to cart immediately
+        this.cartService.addToCart(product);
+        // Identify the clicked button and its product-card container
+        const btn = event.currentTarget as HTMLElement;
+        const card = btn.closest('.product-card') as HTMLElement;
+        if (!card) return;
+        const imageDiv = card.querySelector('.product-image') as HTMLElement;
+        if (!imageDiv) return;
+        // Get image URL from background-image style
+        const bg = imageDiv.style.backgroundImage || '';
+        const match = bg.match(/url\("?(.*?)"?\)/);
+        const imgUrl = match && match[1] ? match[1] : '';
+        // Create flyer image element
+        const flyer = document.createElement('img');
+        flyer.src = imgUrl;
+        const rect = imageDiv.getBoundingClientRect();
+        flyer.style.position = 'fixed';
+        flyer.style.left = rect.left + 'px';
+        flyer.style.top = rect.top + 'px';
+        flyer.style.width = rect.width + 'px';
+        flyer.style.height = rect.height + 'px';
+        flyer.style.transition = 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out';
+        flyer.style.zIndex = '1000';
+        document.body.appendChild(flyer);
+        // Calculate destination coordinates to cart icon
+        const cartIcon = document.getElementById('cart-icon');
+        if (cartIcon) {
+            const cartRect = cartIcon.getBoundingClientRect();
+            const dx = (cartRect.left + cartRect.width/2) - (rect.left + rect.width/2);
+            const dy = (cartRect.top + cartRect.height/2) - (rect.top + rect.height/2);
+            requestAnimationFrame(() => {
+                flyer.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+                flyer.style.opacity = '0.5';
+            });
+        }
+        // Remove the flyer after animation
+        flyer.addEventListener('transitionend', () => flyer.remove());
     }
     
     /**
@@ -120,5 +167,9 @@ export class HomeComponent implements OnInit {
             this.brandPage++;
             this.loadPaginatedBrands();
         }
+    }
+
+    redirectToLogin(): void { // Added redirectToLogin method
+        this.router.navigate(['/login']);
     }
 }

@@ -13,6 +13,8 @@ import {CartComponent} from './cart/cart.component';
 import {HeaderComponent} from './header/header.component';
 import {FooterComponent} from './footer/footer.component';
 import {AppRoutingModule} from './app-routing.module';
+import {LoginComponent} from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
     declarations: [
@@ -21,7 +23,9 @@ import {AppRoutingModule} from './app-routing.module';
         ProductDetailComponent,
         ViewAllProductsComponent,
         CheckoutComponent,
-        CartComponent
+        CartComponent,
+        LoginComponent,
+        RegisterComponent
     ],
     imports: [
         BrowserModule,
@@ -29,7 +33,8 @@ import {AppRoutingModule} from './app-routing.module';
         HttpClientModule,
         FormsModule,
         ReactiveFormsModule
-    ],    providers: [
+    ],
+    providers: [
         {
             provide: HTTP_INTERCEPTORS,
             useClass: AuthInterceptor,

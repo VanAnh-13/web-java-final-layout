@@ -1,10 +1,11 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule} from '@angular/forms';
-import {CartService} from '../cart.service'; // Import CartService
+import {CartService} from '../services/cart.service'; // Import CartService
 import {Observable, Subscription} from 'rxjs'; // Import Observable and Subscription
 import {RouterModule} from '@angular/router'; // Import RouterModule
 import {CartItem} from '../models/cart.model'; // Import CartItem
+import { AuthService } from '../services/auth.service'; // Import AuthService
 
 @Component({
     selector: 'app-checkout',
@@ -20,21 +21,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     discountMessage: string = '';
     discountAmount: number = 0;
     discountAppliedSuccessfully: boolean = false;
+    userEmail: string | null = null; // Added to store user's email
 
-    cartItems: any[] = []; // Will hold cart items
+    cartItems: CartItem[] = []; // Will hold cart items // Changed from any[] to CartItem[]
     private cartSubscription: Subscription | undefined;
 
-    shippingAndHandling: number = 5.00; // Assuming a fixed shipping cost
-    estimatedTaxRate: number = 0.08; // 8% tax rate, matches image
+    shippingAndHandling: number = 0; // Assuming a fixed shipping cost, 0 as per image
+    estimatedTaxRate: number = 0.10; // 10% tax rate, matches image and cart service
 
     itemsTotal: number = 0;
     totalBeforeTax: number = 0;
     estimatedTax: number = 0;
     orderTotal: number = 0;
 
+    private readonly SHIPPING_ADDRESS_KEY = 'shippingAddress';
+    private readonly SAVE_ADDRESS_PREFERENCE_KEY = 'saveAddressPreference';
+
     constructor(
         private formBuilder: FormBuilder,
-        private cartService: CartService // Inject CartService
+        private cartService: CartService, // Inject CartService
+        private authService: AuthService // Inject AuthService
     ) {
         this.checkoutForm = this.formBuilder.group({
             // Contact & Shipping
@@ -66,6 +72,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.cartItems = items;
             this.calculateTotals();
         });
+        if (this.authService.isLoggedIn && this.authService.currentUserValue) {
+            this.userEmail = this.authService.currentUserValue.email;
+            this.checkoutForm.patchValue({ email: this.userEmail });
+        }
+
+        this.loadSavedAddress();
     }
 
     ngOnDestroy(): void {
@@ -82,13 +94,32 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             return total + (price * item.quantity);
         }, 0);
         
+        // Tax is calculated on itemsTotal (subtotal)
+        this.estimatedTax = this.itemsTotal * this.estimatedTaxRate;
+        // Total before tax now includes itemsTotal and shipping, minus discount
         this.totalBeforeTax = this.itemsTotal + this.shippingAndHandling - this.discountAmount;
-        this.estimatedTax = this.totalBeforeTax * this.estimatedTaxRate;
+        // Order total includes totalBeforeTax and estimatedTax
         this.orderTotal = this.totalBeforeTax + this.estimatedTax;
     }
 
     getItemCount(): number {
         return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    }
+
+    // Added methods to handle cart item manipulations
+    incrementItem(item: CartItem): void {
+        this.cartService.incrementItem(item);
+        // calculateTotals() is called via the cartItems$ subscription
+    }
+
+    decrementItem(item: CartItem): void {
+        this.cartService.decrementItem(item);
+        // calculateTotals() is called via the cartItems$ subscription
+    }
+
+    removeItem(item: CartItem): void {
+        this.cartService.removeItem(item);
+        // calculateTotals() is called via the cartItems$ subscription
     }
 
     applyDiscount(): void {
@@ -117,6 +148,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         if (this.checkoutForm.valid) {
             console.log('Form submitted:', this.checkoutForm.value);
             // Handle form submission here
+
+            if (this.checkoutForm.get('saveAddress')?.value) {
+                const shippingAddress = {
+                    firstName: this.checkoutForm.get('firstName')?.value,
+                    lastName: this.checkoutForm.get('lastName')?.value,
+                    address: this.checkoutForm.get('address')?.value,
+                    apartment: this.checkoutForm.get('apartment')?.value,
+                    city: this.checkoutForm.get('city')?.value,
+                    country: this.checkoutForm.get('country')?.value,
+                    state: this.checkoutForm.get('state')?.value,
+                    zipCode: this.checkoutForm.get('zipCode')?.value,
+                    phone: this.checkoutForm.get('phone')?.value
+                };
+                localStorage.setItem(this.SHIPPING_ADDRESS_KEY, JSON.stringify(shippingAddress));
+                localStorage.setItem(this.SAVE_ADDRESS_PREFERENCE_KEY, 'true');
+            } else {
+                localStorage.removeItem(this.SHIPPING_ADDRESS_KEY);
+                localStorage.setItem(this.SAVE_ADDRESS_PREFERENCE_KEY, 'false');
+            }
+
         } else {
             console.log('Form is invalid');
             this.markFormGroupTouched();
@@ -133,6 +184,36 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     isFieldInvalid(fieldName: string): boolean {
         const field = this.checkoutForm.get(fieldName);
         return !!(field && field.invalid && field.touched);
+    }
+
+    private loadSavedAddress(): void {
+        const savedAddressPreference = localStorage.getItem(this.SAVE_ADDRESS_PREFERENCE_KEY);
+        if (savedAddressPreference === 'true') {
+            this.checkoutForm.get('saveAddress')?.setValue(true);
+            const savedAddress = localStorage.getItem(this.SHIPPING_ADDRESS_KEY);
+            if (savedAddress) {
+                try {
+                    const addressData = JSON.parse(savedAddress);
+                    this.checkoutForm.patchValue({
+                        firstName: addressData.firstName,
+                        lastName: addressData.lastName,
+                        address: addressData.address,
+                        apartment: addressData.apartment,
+                        city: addressData.city,
+                        country: addressData.country,
+                        state: addressData.state,
+                        zipCode: addressData.zipCode,
+                        phone: addressData.phone
+                    });
+                } catch (e) {
+                    console.error('Error parsing saved shipping address:', e);
+                    localStorage.removeItem(this.SHIPPING_ADDRESS_KEY); // Clear corrupted data
+                    localStorage.removeItem(this.SAVE_ADDRESS_PREFERENCE_KEY);
+                }
+            }
+        } else {
+             this.checkoutForm.get('saveAddress')?.setValue(false); // Default to false if no preference
+        }
     }
 
     getFieldError(fieldName: string): string {

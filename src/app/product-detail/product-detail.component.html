@@ -98,7 +98,7 @@
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4">
                     <button class="flex-1 flex min-w-[120px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-6 bg-[#eb6c28] hover:bg-[#d35400] text-white text-base font-bold leading-normal tracking-[0.015em] transition-all focus:ring-2 focus:ring-[#eb6c28] focus:ring-opacity-50"
-                            (click)="onAddToCart()"
+                            (click)="isLoggedIn ? onAddToCart() : redirectToLogin()"
                             [disabled]="!product.inStock"
                             [class.opacity-50]="!product.inStock">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">

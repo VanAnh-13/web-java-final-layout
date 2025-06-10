@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of} from 'rxjs';
-import {Product, ProductApiResponse} from './models/product.model';
+import {Product, ProductApiResponse, PaginatedProducts} from './models/product.model'; // Import PaginatedProducts
 import {catchError, map, tap, take} from 'rxjs/operators'; // Added take
 import {ApiService} from './services/api.service';
 import {HttpClient} from '@angular/common/http';
@@ -58,34 +58,30 @@ export class ProductService {
         );
     }
 
-    getProductByName(name: string): Observable<Product | undefined> {
-        const normalizedQueryName = name.trim().toLowerCase();
-        return this.products$.pipe(
-            map(products => {
-                if (!products || !Array.isArray(products)) {
-                    console.warn('ProductService.getProductByName: products array is null, undefined, or not an array.');
-                    return undefined;
-                }
-                return products.find(p => {
-                    if (!p || typeof p.name !== 'string') {
-                        // console.warn('ProductService.getProductByName: Encountered invalid product or product name during find:', p);
-                        return false;
-                    }
-                    return p.name.trim().toLowerCase() === normalizedQueryName;
-                });
-            }),
-            tap(foundProduct => { // This tap is for logging
-                if (!foundProduct) {
-                    console.log(`ProductService.getProductByName: Product not found for normalized name '${normalizedQueryName}'.`);
-                    this.products$.pipe(take(1)).subscribe(currentProducts => {
-                        if (currentProducts && currentProducts.length > 0) {
-                            const availableNames = currentProducts.map(p => p && p.name ? p.name.trim().toLowerCase() : '[INVALID OR MISSING NAME]');
-                            console.log(`ProductService.getProductByName: Available normalized names in products$:`, availableNames);
-                        } else {
-                            console.log('ProductService.getProductByName: products$ is currently empty or null.');
-                        }
-                    });
-                }
+    searchProducts(searchTerm: string, page: number, size: number, sortDir: string, sortBy: string, brand?: string | null): Observable<PaginatedProducts> { // Add brand parameter
+        const params: any = { // Use 'any' for params to dynamically add brand
+            page: page.toString(),
+            size: size.toString(),
+            sortDir: sortDir,
+            sortBy: sortBy
+        };
+        if (brand) { // If brand is provided, add it to params
+            params.brand = brand;
+        }
+        return this.http.get<ApiResponse<PaginatedProducts>>(`${this.productsEndpoint}/search/${searchTerm}`, { params }).pipe( // Expect ApiResponse<PaginatedProducts>
+            map(response => response.data),
+            catchError(error => {
+                console.error('Error searching products:', error);
+                // Return an Observable of a PaginatedProducts-compatible error object
+                return of({
+                    content: [],
+                    totalPages: 0,
+                    totalItems: 0,
+                    isFirst: true,
+                    isLast: true,
+                    pageSize: size,
+                    currentPage: page
+                } as PaginatedProducts);
             })
         );
     }
@@ -144,16 +140,16 @@ export class ProductService {
         size: number = 10,
         sortDir: string = 'ASC',
         sortBy: string = 'name'
-    ): Observable<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }> {
+    ): Observable<PaginatedProducts> { // Return PaginatedProducts
         return this.http
-            .get<ApiResponse<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }>>(
+            .get<ApiResponse<PaginatedProducts>>(
                 `${this.productsEndpoint}/filter/brand/${brandName}?page=${page}&size=${size}&sortDir=${sortDir}&sortBy=${sortBy}`
             )
             .pipe(
                 map(response => response.data),
                 catchError(error => {
                     console.error(`Error filtering products by brand ${brandName}:`, error);
-                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true });
+                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true } as PaginatedProducts);
                 })
             );
     }
@@ -167,16 +163,16 @@ export class ProductService {
         size: number = 10,
         sortDir: string = 'ASC',
         sortBy: string = 'name'
-    ): Observable<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }> {
+    ): Observable<PaginatedProducts> { // Return PaginatedProducts
         return this.http
-            .get<ApiResponse<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }>>(
+            .get<ApiResponse<PaginatedProducts>>(
                 `${this.productsEndpoint}/filter/price/${price}?page=${page}&size=${size}&sortDir=${sortDir}&sortBy=${sortBy}`
             )
             .pipe(
                 map(response => response.data),
                 catchError(error => {
                     console.error(`Error filtering products by price ${price}:`, error);
-                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true });
+                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true } as PaginatedProducts);
                 })
             );
     }
@@ -189,16 +185,16 @@ export class ProductService {
         size: number = 10,
         sortDir: string = 'ASC',
         sortBy: string = 'name'
-    ): Observable<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }> {
+    ): Observable<PaginatedProducts> { // Return PaginatedProducts
         return this.http
-            .get<ApiResponse<{ content: Product[]; totalPages: number; totalItems: number; pageSize: number; currentPage: number; isFirst: boolean; isLast: boolean; }>>(
+            .get<ApiResponse<PaginatedProducts>>(
                 `${this.productsEndpoint}?page=${page}&size=${size}&sortDir=${sortDir}&sortBy=${sortBy}`
             )
             .pipe(
                 map(response => response.data),
                 catchError(error => {
                     console.error('Error fetching paginated products:', error);
-                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true });
+                    return of({ content: [], totalPages: 0, totalItems: 0, pageSize: size, currentPage: page, isFirst: true, isLast: true } as PaginatedProducts);
                 })
             );
     }
@@ -220,31 +216,6 @@ export class ProductService {
             }),
             catchError(error => {
                 console.error(`Error fetching product with ID ${id}:`, error);
-                return of(undefined);
-            })
-        );
-    }
-
-    /**
-     * Fetch product by name from the API
-     * @param name The product name
-     * @returns Observable of a single product
-     */
-    fetchProductByName(name: string): Observable<Product | undefined> {
-        // Assuming the API endpoint for fetching by name is /products/name/{name} - user indicated this API might not exist.
-        // If this API call fails consistently, this method will always return undefined after logging an error.
-        const encodedName = encodeURIComponent(name);
-        return this.http.get<ApiResponse<Product>>(`${this.productsEndpoint}/name/${encodedName}`).pipe(
-            map(response => {
-                const productData = response.data;
-                // Ensure productData is a valid Product-like object, not just {}
-                if (productData && typeof productData === 'object' && productData.name) {
-                    return productData as Product;
-                }
-                return undefined;
-            }),
-            catchError(error => {
-                console.error(`Error fetching product by name ${name}:`, error);
                 return of(undefined);
             })
         );

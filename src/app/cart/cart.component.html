@@ -2,7 +2,7 @@
     <div class="flex flex-col flex-1 gap-8">
         <div class="flex flex-wrap gap-2 p-4 items-center">
             <a class="text-slate-500 hover:text-[#eb6c28] text-sm font-medium leading-normal transition-colors"
-               routerLink="/">Home</a>
+               routerLink="/home">Home</a>
             <span class="text-slate-400 text-sm font-medium leading-normal">/</span>
             <span class="text-slate-800 text-sm font-semibold leading-normal">Shopping Cart</span>
         </div>
@@ -37,9 +37,7 @@
                                     class="text-lg font-medium leading-normal flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-[#eb6c28] cursor-pointer transition-colors">
                                 -
                             </button>
-                            <input
-                                    class="text-base font-medium leading-normal w-8 p-0 text-center bg-transparent focus:outline-0 focus:ring-0 focus:border-none border-none [appearance:textfield] [&amp;::-webkit-inner-spin-button]:appearance-none [&amp;::-webkit-outer-spin-button]:appearance-none"
-                                    type="number" [value]="item.quantity" readonly/>
+                            <span class="text-lg font-medium">{{ item.quantity }}</span>
                             <button (click)="incrementItem(item)"
                                     class="text-lg font-medium leading-normal flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-[#eb6c28] cursor-pointer transition-colors">
                                 +

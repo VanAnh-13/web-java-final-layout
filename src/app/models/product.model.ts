@@ -26,6 +26,16 @@ export class Product {
   }
 }
 
+export interface PaginatedProducts {
+  content: Product[];
+  totalPages: number;
+  totalItems: number;
+  isFirst: boolean;
+  isLast: boolean;
+  pageSize: number;
+  currentPage: number;
+}
+
 // Interface matching the exact API response
 export interface ProductApiResponse {
   code: number;

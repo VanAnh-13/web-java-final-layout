@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CartService } from '../cart.service'; // Import CartService
+import { CartService } from '../services/cart.service'; // Import CartService
 import { Observable } from 'rxjs';
 
 @Component({
@@ -9,16 +9,21 @@ import { Observable } from 'rxjs';
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css'],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule, RouterModule]
 })
 export class CartComponent implements OnInit {
   cartItems$: Observable<any[]>;
 
-  constructor(private router: Router, private cartService: CartService) {
+  constructor(private router: Router, private cartService: CartService, private cdr: ChangeDetectorRef) {
     this.cartItems$ = this.cartService.cartItems$;
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.cartItems$.subscribe(items => {
+      console.log('Cart items updated:', items);
+      this.cdr.detectChanges();
+    });
+  }
 
   removeItem(item: any) {
     this.cartService.removeItem(item);

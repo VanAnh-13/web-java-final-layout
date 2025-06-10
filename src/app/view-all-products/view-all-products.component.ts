@@ -2,8 +2,9 @@ import {Component, OnInit} from '@angular/core';
 import {Router, RouterModule, ActivatedRoute} from '@angular/router';
 import {NgFor, NgIf, CommonModule} from '@angular/common';
 import {ProductService} from '../product.service';
-import {CartService} from '../cart.service';
+import {CartService} from '../services/cart.service';
 import {Product} from '../models/product.model';
+import { AuthService } from '../services/auth.service'; // Import AuthService
 
 @Component({
     selector: 'app-view-all-products',
@@ -17,7 +18,6 @@ export class ViewAllProductsComponent implements OnInit {
     filteredProducts: Product[] = [];
     loading: boolean = true;
     error: string | null = null;
-    brands: string[] = [];
     selectedBrand: string | null = null;
     sortOption: string = 'name'; // Changed default from 'popularity'
     currentPage: number = 0;
@@ -26,26 +26,36 @@ export class ViewAllProductsComponent implements OnInit {
     totalItems: number = 0;
     isFirstPage: boolean = true;
     isLastPage: boolean = false;
+    searchTerm: string | null = null; // Added for search functionality
+    isLoggedIn: boolean = false; // Added isLoggedIn property
+
+    // Paginated brand names for display
+    paginatedBrands: string[] = [];
+    brandPage: number = 0;
+    brandPageSize: number = 10;
+    totalBrandPages: number = 0;
+    isFirstBrandPage: boolean = true;
+    isLastBrandPage: boolean = false;
 
     constructor(
         private router: Router,
         private route: ActivatedRoute,
         private productService: ProductService,
-        private cartService: CartService
+        private cartService: CartService,
+        private authService: AuthService // Inject AuthService
     ) {}
 
     ngOnInit(): void {
-        this.loadProducts();
-        this.loadBrands();
-
-        this.route.queryParams.subscribe(params => {            
-            if (params['brand']) {
-                this.selectedBrand = params['brand'];
-                if (this.selectedBrand) {
-                    this.filterByBrand(this.selectedBrand);
-                }
-            }
+        this.route.queryParams.subscribe(params => {
+            this.currentPage = params['page'] ? +params['page'] : 0;
+            this.selectedBrand = params['brand'] || null;
+            this.sortOption = params['sort'] || 'name'; // Default sort to 'name' if not in params
+            this.searchTerm = params['search'] || null; // Capture search term
+            this.loadProducts(); // Load products based on URL params or defaults
         });
+        // this.loadBrands(); // Brands can be loaded independently // Remove this line
+        this.loadPaginatedBrands(); // Add this line
+        this.isLoggedIn = this.authService.isLoggedIn; // Initialize isLoggedIn
     }
 
     loadProducts(): void {
@@ -84,36 +94,34 @@ export class ViewAllProductsComponent implements OnInit {
                 break;
         }
 
-        this.productService.getProductsPage(this.currentPage, this.pageSize, sortDirApi, sortByApi)
-            .subscribe({
-                next: (resp) => {
-                    this.products = resp.content;
-                    this.filteredProducts = resp.content;
-                    this.totalPages = resp.totalPages;
-                    this.totalItems = resp.totalItems;
-                    this.isFirstPage = resp.isFirst;
-                    this.isLastPage = resp.isLast;
-                    this.currentPage = resp.currentPage; // Ensure currentPage is updated from response
-                    this.loading = false;
-                },
-                error: (err) => {
-                    console.error(`Error loading products (sorted by ${sortByApi}, ${sortDirApi}):`, err);
-                    if (err.message && err.message.includes("Could not resolve attribute")) {
-                        this.error = `Sorting by '${sortByApi}' is not supported. Defaulting to sort by name.`;
-                        // Optionally, force a reload with a default sort
-                        if (this.sortOption !== 'name') {
-                           this.sortOption = 'name';
-                           this.loadProducts(); // Reload with default sort
-                           return;
-                        }
-                    } else {
-                        this.error = 'Failed to load products. Please try again later.';
-                    }
-                    this.loading = false;
-                    this.products = [];
-                    this.filteredProducts = [];
-                }
-            });
+        // Choose correct API call: filter by brand if selected, else standard paged fetch
+        let productsObservable;
+        if (this.searchTerm) {
+            productsObservable = this.productService.searchProducts(this.searchTerm, this.currentPage, this.pageSize, sortDirApi, sortByApi, this.selectedBrand); // Pass selectedBrand
+        } else if (this.selectedBrand) {
+            productsObservable = this.productService.filterByBrandName(this.selectedBrand, this.currentPage, this.pageSize, sortDirApi, sortByApi);
+        } else {
+            productsObservable = this.productService.getProductsPage(this.currentPage, this.pageSize, sortDirApi, sortByApi);
+        }
+
+        productsObservable.subscribe({
+            next: (resp: any) => { // Add type any to resp
+                this.products = resp.content;
+                this.filteredProducts = resp.content;
+                this.totalPages = resp.totalPages;
+                this.totalItems = resp.totalItems;
+                this.isFirstPage = resp.isFirst;
+                this.isLastPage = resp.isLast;
+                this.loading = false;
+            },
+            error: (err: any) => { // Add type any to err
+                this.error = err.message || 'Failed to load products';
+                this.loading = false;
+            },
+            complete: () => {
+                this.updateUrl(); // Update URL after loading products
+            }
+        });
     }
     
     /**
@@ -122,95 +130,177 @@ export class ViewAllProductsComponent implements OnInit {
     loadBrands(): void {
         this.productService.getAllBrands().subscribe({
             next: (brands) => {
-                this.brands = [...new Set(brands)];
+                // this.brands = [...new Set(brands)]; // Remove this line
             },
             error: (err) => {
                 console.error('Error loading brands:', err);
             }
         });
     }
-    
-    filterByBrand(brandName: string): void {
-        // Server-side filtering by brand name with pagination and sorting
-        this.selectedBrand = brandName || null;
-        this.currentPage = 0; // Reset to first page on filter change
-        // Determine sort parameters
-        let sortByApi = 'name';
-        let sortDirApi = 'ASC';
-        switch(this.sortOption) {
-            case 'price-low-high':
-                sortByApi = 'price'; sortDirApi = 'ASC'; break;
-            case 'price-high-low':
-                sortByApi = 'price'; sortDirApi = 'DESC'; break;
-            case 'name':
-                sortByApi = 'name'; sortDirApi = 'ASC'; break;
-            default:
-                // Handles unsupported options
-                sortByApi = this.sortOption !== 'popularity' ? this.sortOption : 'name';
-                sortDirApi = 'ASC';
-                break;
-        }
-        if (!brandName) {
-            // No filter: load all products
-            this.loadProducts();
-            return;
-        }
-        this.loading = true;
-        this.productService.filterByBrandName(
-            brandName,
-            this.currentPage,
-            this.pageSize,
-            sortDirApi,
-            sortByApi
-        ).subscribe({
-            next: resp => {
-                this.filteredProducts = resp.content;
-                this.totalPages = resp.totalPages;
-                this.totalItems = resp.totalItems;
-                this.isFirstPage = resp.isFirst;
-                this.isLastPage = resp.isLast;
-                this.currentPage = resp.currentPage;
-                this.loading = false;
+
+    /**
+     * Load paginated brands from API
+     */
+    loadPaginatedBrands(): void {
+        this.productService.getPaginatedBrands(this.brandPage, this.brandPageSize).subscribe({
+            next: (resp: any) => { 
+                console.log('Received paginated brands response:', resp);
+                this.paginatedBrands = resp.content; 
+                this.isFirstBrandPage = resp.isFirst;
+                this.isLastBrandPage = resp.isLast;
+                this.totalBrandPages = resp.totalPages;
+                // Ensure brandPage is not out of bounds if totalPages changed
+                if (this.brandPage >= this.totalBrandPages && this.totalBrandPages > 0) {
+                    this.brandPage = this.totalBrandPages - 1;
+                } else if (this.totalBrandPages === 0) {
+                    this.brandPage = 0; // Reset to first page if no pages
+                }
             },
-            error: err => {
-                console.error(`Error filtering by brand ${brandName}:`, err);
-                this.error = 'Failed to filter products. Please try again later.';
-                this.loading = false;
+            error: (err) => {
+                console.error('Error loading paginated brands:', err);
+                this.error = "Could not load brands. Please try again later.";
+                this.paginatedBrands = [];
+                this.totalBrandPages = 0;
+                this.isFirstBrandPage = true;
+                this.isLastBrandPage = true;
             }
         });
+    }
+
+    /**
+     * Navigate to previous brand page
+     */
+    prevBrandPage(): void {
+        if (this.brandPage > 0) {
+            this.brandPage--;
+            this.loadPaginatedBrands();
+        }
+    }
+
+    /**
+     * Navigate to next brand page
+     */
+    nextBrandPage(): void {
+        if (!this.isLastBrandPage) {
+            this.brandPage++;
+            this.loadPaginatedBrands();
+        }
+    }
+    
+    filterByBrand(brandName: string): void {
+        this.selectedBrand = brandName || null;
+        this.currentPage = 0; 
+        this.searchTerm = null; // Explicitly clear search term when a brand filter is applied
+        this.loadProducts(); // This will also call updateUrl
     }
     
     sortProducts(option: string): void {
         this.sortOption = option;
-        this.currentPage = 0; // Reset to the first page when sort option changes
-        this.loadProducts(); // Reload data with the new sort criteria
+        this.currentPage = 0; 
+        this.loadProducts(); // This will also call updateUrl
     }
 
-    prevPage(): void {
+    onPreviousPage(): void {
         if (!this.isFirstPage) {
             this.currentPage--;
             this.loadProducts();
         }
     }
 
-    nextPage(): void {
+    onNextPage(): void {
         if (!this.isLastPage) {
             this.currentPage++;
             this.loadProducts();
         }
     }
-    
-    extractPrice(priceStr: string): number {
-        const numericString = priceStr.replace(/[^0-9]/g, '');
-        return parseFloat(numericString);
+
+    hasPreviousPage(): boolean {
+        return !this.isFirstPage;
+    }
+
+    hasNextPage(): boolean {
+        return !this.isLastPage;
+    }
+
+    updateUrl(): void {
+        const queryParams: any = {
+            page: this.currentPage === 0 ? null : this.currentPage, // Remove page if it's default (0)
+            sort: this.sortOption === 'name' ? null : this.sortOption, // Remove sort if it's default ('name')
+            brand: this.selectedBrand || null, // Ensures brand is removed if null
+            search: this.searchTerm || null    // Ensures search is removed if null
+        };
+
+        // Clean up null values from queryParams to avoid `key=null` in URL
+        Object.keys(queryParams).forEach(key => {
+            if (queryParams[key] === null || queryParams[key] === undefined) {
+                delete queryParams[key];
+            }
+        });
+
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: queryParams,
+            // queryParamsHandling: 'merge', // Removed to ensure queryParams is the source of truth
+            replaceUrl: true
+        });
     }
 
     addToCart(product: Product): void {
         this.cartService.addToCart(product);
+        // Optionally, add a notification or visual feedback here
     }
 
     buyNow(product: Product): void {
-        this.cartService.addToCart(product);
+        this.cartService.addToCart(product); // Add to cart first
         this.router.navigate(['/checkout']);
+    }
+
+    /**
+     * Animate product image flying to cart icon and add to cart
+     */
+    animateAddToCart(event: MouseEvent, product: Product): void {
+        // Add to cart immediately
+        this.cartService.addToCart(product);
+        // Find product card and image element
+        const btn = event.currentTarget as HTMLElement;
+        const card = btn.closest('.product-card') as HTMLElement;
+        if (!card) return;
+        const imageDiv = card.querySelector('.product-image') as HTMLElement;
+        if (!imageDiv) return;
+        // Extract image URL from background-image style
+        const bg = imageDiv.style.backgroundImage || '';
+        const urlMatch = bg.match(/url\("?(.*?)"?\)/);
+        const imgUrl = urlMatch && urlMatch[1] ? urlMatch[1] : '';
+        // Create flying image
+        const flyer = document.createElement('img');
+        flyer.src = imgUrl;
+        const rect = imageDiv.getBoundingClientRect();
+        flyer.style.position = 'fixed';
+        flyer.style.left = rect.left + 'px';
+        flyer.style.top = rect.top + 'px';
+        flyer.style.width = rect.width + 'px';
+        flyer.style.height = rect.height + 'px';
+        flyer.style.transition = 'transform 0.8s ease-in-out, opacity 0.8s ease-in-out';
+        flyer.style.zIndex = '1000';
+        document.body.appendChild(flyer);
+        // Calculate destination (cart icon)
+        const cartIcon = document.getElementById('cart-icon');
+        if (cartIcon) {
+            const cartRect = cartIcon.getBoundingClientRect();
+            const dx = (cartRect.left + cartRect.width/2) - (rect.left + rect.width/2);
+            const dy = (cartRect.top + cartRect.height/2) - (rect.top + rect.height/2);
+            requestAnimationFrame(() => {
+                flyer.style.transform = `translate(${dx}px, ${dy}px) scale(0.2)`;
+                flyer.style.opacity = '0.5';
+            });
+        }
+        // Cleanup after animation
+        flyer.addEventListener('transitionend', () => {
+            flyer.remove();
+        });
+    }
+
+    redirectToLogin(): void { // Added redirectToLogin method
+        this.router.navigate(['/login']);
     }
 }

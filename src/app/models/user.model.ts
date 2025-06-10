@@ -32,11 +32,17 @@ export interface LoginRequest {
   password: string;
 }
 
-export interface LoginResponse {
-  message: string;
+export interface LoginResponseData {
+  token: string;
   username: string;
+  roles: Array<{ authority: string }>; // Updated to match API
   email: string;
-  roles: string[];
+}
+
+export interface LoginResponse {
+  code: number; // Added from API response
+  message: string; // Added from API response
+  data: LoginResponseData; // Changed to match API response structure
 }
 
 export interface RegistrationRequest {
