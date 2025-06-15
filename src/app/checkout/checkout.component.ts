@@ -1,11 +1,13 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule} from '@angular/forms';
+import { HttpClient } from '@angular/common/http'; // Import HttpClient
 import {CartService} from '../services/cart.service'; // Import CartService
 import {Observable, Subscription} from 'rxjs'; // Import Observable and Subscription
 import {RouterModule} from '@angular/router'; // Import RouterModule
 import {CartItem} from '../models/cart.model'; // Import CartItem
 import { AuthService } from '../services/auth.service'; // Import AuthService
+import { Router } from '@angular/router'; // Import Router
 
 @Component({
     selector: 'app-checkout',
@@ -16,7 +18,7 @@ import { AuthService } from '../services/auth.service'; // Import AuthService
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
     checkoutForm: FormGroup;
-    selectedPaymentMethod = 'creditCard';
+    selectedPaymentMethod = 'stripe';
     discountCode: string = '';
     discountMessage: string = '';
     discountAmount: number = 0;
@@ -40,7 +42,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     constructor(
         private formBuilder: FormBuilder,
         private cartService: CartService, // Inject CartService
-        private authService: AuthService // Inject AuthService
+        private authService: AuthService, // Inject AuthService
+        private http: HttpClient, // Inject HttpClient
+        private router: Router // Inject Router
     ) {
         this.checkoutForm = this.formBuilder.group({
             // Contact & Shipping
@@ -58,7 +62,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             saveAddress: [true],
 
             // Payment
-            paymentMethod: ['creditCard'],
+            paymentMethod: ['stripe'],
             cardNumber: ['', Validators.required],
             expirationDate: ['', Validators.required],
             cvv: ['', Validators.required],
@@ -85,20 +89,15 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             this.cartSubscription.unsubscribe();
         }
     }    calculateTotals(): void {
-        // Calculate totals directly from cart items
         this.itemsTotal = this.cartItems.reduce((total, item) => {
-            // Convert price string to number if needed
             const price = typeof item.product.price === 'string' 
                 ? parseFloat(item.product.price.replace(/[^\d.]/g, '')) 
                 : parseFloat(item.product.price);
             return total + (price * item.quantity);
         }, 0);
         
-        // Tax is calculated on itemsTotal (subtotal)
         this.estimatedTax = this.itemsTotal * this.estimatedTaxRate;
-        // Total before tax now includes itemsTotal and shipping, minus discount
         this.totalBeforeTax = this.itemsTotal + this.shippingAndHandling - this.discountAmount;
-        // Order total includes totalBeforeTax and estimatedTax
         this.orderTotal = this.totalBeforeTax + this.estimatedTax;
     }
 
@@ -106,10 +105,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         return this.cartItems.reduce((sum, item) => sum + item.quantity, 0);
     }
 
-    // Added methods to handle cart item manipulations
     incrementItem(item: CartItem): void {
         this.cartService.incrementItem(item);
-        // calculateTotals() is called via the cartItems$ subscription
     }
 
     decrementItem(item: CartItem): void {
@@ -130,24 +127,42 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         } else if (this.discountCode.trim() === '') {
             this.discountMessage = 'Please enter a discount code.';
             this.discountAppliedSuccessfully = false;
-            this.discountAmount = 0; // Reset discount if code is empty
+            this.discountAmount = 0; 
         } else {
             this.discountAmount = 0;
             this.discountMessage = 'Invalid discount code. Please try again.';
             this.discountAppliedSuccessfully = false;
         }
-        this.calculateTotals(); // Recalculate after applying/failing discount
+        this.calculateTotals(); 
     }
 
     onPaymentMethodChange(method: string) {
         this.selectedPaymentMethod = method;
         this.checkoutForm.patchValue({paymentMethod: method});
+
+        const creditCardControls = ['cardNumber', 'expirationDate', 'cvv', 'nameOnCard'];
+
+        if (method === 'creditCard') {
+            creditCardControls.forEach(controlName => {
+                this.checkoutForm.get(controlName)?.setValidators(Validators.required);
+                this.checkoutForm.get(controlName)?.enable();
+            });
+        } else {
+            creditCardControls.forEach(controlName => {
+                this.checkoutForm.get(controlName)?.clearValidators();
+                this.checkoutForm.get(controlName)?.disable(); // Optionally disable and reset
+                this.checkoutForm.get(controlName)?.reset(''); // Reset value
+            });
+        }
+        // Update validity for all controls after changing validators
+        creditCardControls.forEach(controlName => {
+            this.checkoutForm.get(controlName)?.updateValueAndValidity();
+        });
     }
 
     onSubmit() {
         if (this.checkoutForm.valid) {
             console.log('Form submitted:', this.checkoutForm.value);
-            // Handle form submission here
 
             if (this.checkoutForm.get('saveAddress')?.value) {
                 const shippingAddress = {
@@ -168,9 +183,34 @@ export class CheckoutComponent implements OnInit, OnDestroy {
                 localStorage.setItem(this.SAVE_ADDRESS_PREFERENCE_KEY, 'false');
             }
 
+            const email = this.checkoutForm.get('email')?.value;
+            const amount = this.orderTotal;
+            const currency = 'VND'; // Or get from a config or service
+
+            const apiUrl = `http://localhost:7070/api/payment/invoice?email=${email}&amount=${amount}&currency=${currency}`;
+
+            this.http.post(apiUrl, {}).subscribe({
+                next: (response) => {
+                    console.log('Payment successful', response);
+                    this.router.navigate(['/payment-success']); // Navigate to payment success page
+                },
+                error: (error) => {
+                    console.error('Payment failed', error);
+                    // Handle payment failure, e.g., show a notification
+                    alert('Payment failed. Please try again.'); // Simple alert for now
+                }
+            });
+
+
         } else {
             console.log('Form is invalid');
             this.markFormGroupTouched();
+            Object.keys(this.checkoutForm.controls).forEach(key => {
+                const controlErrors = this.checkoutForm.get(key)?.errors;
+                if (controlErrors != null) {
+                    console.log('Key control: ' + key + ', errors: ' + JSON.stringify(controlErrors));
+                }
+            });
         }
     }
 
