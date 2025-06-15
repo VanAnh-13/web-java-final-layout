@@ -7,6 +7,7 @@ import {ViewAllProductsComponent} from './view-all-products/view-all-products.co
 import {CartComponent} from './cart/cart.component';
 import {LoginComponent} from './login/login.component'; // Import the LoginComponent
 import {RegisterComponent} from './register/register.component'; // Import the RegisterComponent
+import { PaymentSuccessComponent } from './payment-success/payment-success.component'; // Import PaymentSuccessComponent
 
 export const routes: Routes = [
     {path: '', component: HomeComponent}, // Add default route to HomeComponent
@@ -16,7 +17,8 @@ export const routes: Routes = [
     {path: 'products', component: ViewAllProductsComponent},
     {path: 'cart', component: CartComponent}, // Add route for CartComponent
     {path: 'login', component: LoginComponent}, // Add the login route
-    {path: 'signup', component: RegisterComponent} // Add the register route
+    {path: 'signup', component: RegisterComponent}, // Add the register route
+    {path: 'payment-success', component: PaymentSuccessComponent} // Add the payment success route
 ];
 
 @NgModule({
